@@ -11,13 +11,13 @@ window.onload = function() {
         game.rootScene.addChild(bear);
         
         
-        var left = (game.width - 8 * 32) / 2;
+        var left = (game.width - 8 * 38) / 2;
         console.log(left);
         var board = new Sprite(320, 320);
         var s1 = new Surface(320, 320);
         for (var i = 0; i < 8; i++) {
             for (var j = 0; j < 8; j++) {
-                s1.context.strokeRect(i * 32 + left, j * 38, 32, 38);
+                s1.context.strokeRect(i * (32 + 6) + left, j * 38, 32, 38);
             }
         }
         board.image = s1;
@@ -65,7 +65,7 @@ window.onload = function() {
         
         block.ontouchend = function(e) {
             moving = 0;
-            block.x = Math.floor((e.x - bx + 16) / 32) * 32;
+            block.x = Math.floor((e.x - bx + 19) / 38) * 38 + left;
             block.y = Math.floor((e.y - by + 19) / 38) * 38;
         };
         
