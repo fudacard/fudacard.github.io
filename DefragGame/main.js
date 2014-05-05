@@ -11,13 +11,13 @@ window.onload = function() {
         game.rootScene.addChild(bear);
         
         
-        var left = (game.width - 8 * 38) / 2;
+        var left = (game.width - 8 * 40) / 2;
         console.log(left);
         var board = new Sprite(320, 320);
         var s1 = new Surface(320, 320);
         for (var i = 0; i < 8; i++) {
             for (var j = 0; j < 8; j++) {
-                s1.context.strokeRect(i * (32 + 6) + left, j * 38, 32, 38);
+                s1.context.strokeRect(i * 40 + left, j * 40, 40, 38);
             }
         }
         board.image = s1;
@@ -25,8 +25,8 @@ window.onload = function() {
         
         
         // テストブロック
-        var block = new Sprite(32, 38);
-        var s = new Surface(32, 38);
+        var block = new Sprite(40, 38);
+        var s = new Surface(40, 38);
         s.context.fillStyle = 'lightgreen';
         s.context.fillRect(0, 0, s.width, s.height);
         s.context.strokeStyle = 'black';
@@ -44,7 +44,7 @@ window.onload = function() {
             y = e.y;
             //bx = e.x - block.x;
             //by = e.y - block.y;
-            bx = 16;
+            bx = 20;
             by = 19;
             moving = 1;
         };
@@ -65,8 +65,8 @@ window.onload = function() {
         
         block.ontouchend = function(e) {
             moving = 0;
-            block.x = Math.floor((e.x - bx + 19) / 38) * 38 + left;
-            block.y = Math.floor((e.y - by + 19) / 38) * 38;
+            block.x = Math.floor((e.x - bx + 20) / 40) * 40 + left;
+            block.y = Math.floor((e.y - by + 19) / 40) * 40;
         };
         
     };
