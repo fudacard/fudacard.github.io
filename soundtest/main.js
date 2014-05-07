@@ -35,9 +35,10 @@ window.onload = function() {
         buttonMp3.x = 130;
         buttonMp3.y = 25;
         buttonMp3.ontouchend = function() {
-            game.load("se_maoudamashii_onepoint28.mp3", function() {
-                game.assets["se_maoudamashii_onepoint28.mp3"].play();
-            });
+            //game.load("se_maoudamashii_onepoint28.mp3", function() {
+            //    game.assets["se_maoudamashii_onepoint28.mp3"].play();
+            //});
+            (new Audio("se_maoudamashii_onepoint28.mp3")).play();
         };
         game.rootScene.addChild(buttonMp3);
         
@@ -45,9 +46,10 @@ window.onload = function() {
         buttonOgg.x = 130;
         buttonOgg.y = 60;
         buttonOgg.ontouchend = function() {
-            game.load("se_maoudamashii_onepoint28.ogg", function() {
-                game.assets["se_maoudamashii_onepoint28.ogg"].play();
-            });
+            //game.load("se_maoudamashii_onepoint28.ogg", function() {
+            //    game.assets["se_maoudamashii_onepoint28.ogg"].play();
+            //});
+            (new Audio("se_maoudamashii_onepoint28.ogg")).play();
         };
         game.rootScene.addChild(buttonOgg);
         
@@ -55,9 +57,10 @@ window.onload = function() {
         buttonWav.x = 130;
         buttonWav.y = 95;
         buttonWav.ontouchend = function() {
-            game.load("se_maoudamashii_onepoint28.wav", function() {
-                game.assets["se_maoudamashii_onepoint28.wav"].play();
-            });
+            //game.load("se_maoudamashii_onepoint28.wav", function() {
+            //    game.assets["se_maoudamashii_onepoint28.wav"].play();
+            //});
+            (new Audio("se_maoudamashii_onepoint28.wav")).play();
         };
         game.rootScene.addChild(buttonWav);
     };
