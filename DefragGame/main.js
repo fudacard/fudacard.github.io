@@ -32,6 +32,8 @@ var Block = Class.create(enchant.Sprite, {
         s.context.strokeStyle = 'black';
         s.context.strokeRect(0, 0, s.width, s.height);
         this.image = s;
+        
+        this.lock = false;
     },
     color: {
         get: function() {
@@ -81,17 +83,6 @@ var GameScene = Class.create(enchant.Scene, {
         board.image = s1;
         game.rootScene.addChild(board);
         
-        
-        // テストブロック
-        /*this.block = new Sprite(40, 38);
-        var s = new Surface(40, 38);
-        s.context.fillStyle = 'lightgreen';
-        s.context.fillRect(0, 0, s.width, s.height);
-        s.context.strokeStyle = 'black';
-        s.context.strokeRect(0, 0, s.width, s.height);
-        this.block.image = s;
-        this.addChild(this.block);*/
-        
         var parent = this;
         
         this.bx = 0;
@@ -99,63 +90,38 @@ var GameScene = Class.create(enchant.Scene, {
         this.moving = 0;
         this.movingBlock = null;
         
-        /*var block2 = new Sprite(40, 38);
-        s.context.fillStyle = 'red';
-        s.context.fillRect(0, 0, s.width, s.height);
-        s.context.strokeStyle = 'black';
-        s.context.strokeRect(0, 0, s.width, s.height);
-        block2.image = s;
-        block2.x = 40;
-        this.addChild(block2);*/
-        
-       // this.block.ontouchstart = function(e) {
-            //bx = e.x - block.x;
-            //by = e.y - block.y;
-       //     parent.bx = 20;
-       //     parent.by = 19;
-       //     parent.moving = 1;
-       // };
-        
-        
-        /*this.block.ontouchmove = function(e) {
-            if(parent.moving) {
-                parent.block.x = e.x + parent.bx;
-                parent.block.y = e.y + parent.by;
-            }
-        };*/
-        
-        /*this.block.ontouchend = function(e) {
-            parent.moving = 0;
-            parent.block.x = Math.floor((e.x - parent.bx + 20) / 40) * 40 + left;
-            parent.block.y = Math.floor((e.y - parent.by + 19) / 40) * 40;
-            boardData[x + y * BOARD_WIDTH] = parent.movingBlock;
-            parent.movingBlock = null;
-        };*/
-        boardData[0 + 0 * BOARD_WIDTH] = new Block();
-        boardData[0 + 0 * BOARD_WIDTH].color;
-        this.addChild(boardData[0 + 0 * BOARD_WIDTH]);
-        
+        putBlock(this, '#f00', 1, 1);
         putBlock(this, '#f00', 2, 0);
-        putBlock(this, '#ff0', 2, 2);
         putBlock(this, '#f00', 3, 3);
+        putBlock(this, '#f00', 4, 4);
+        
+        var startBlock = putBlock(this, '#0081ff', 0, 0);
+        startBlock.lock = true;
+        
+        this.totals = {};
+        this.totals['#f00'] = 4;
+        this.last = 1;
+        this.colorStart = 1;
     },
     ontouchmove: function(e) {
         if(this.moving) {
             //this.movingBlock.x = e.x - this.bx;
             //this.movingBlock.y = e.y - this.by;
-            for (var i = 0; i < 1 + this.front + this.back; i++) {
-                this.movingBlocks[i].x = e.x - this.bx + (i - this.front) * 40;
-                this.movingBlocks[i].y = e.y - this.by;
+            for (var i = 0; i < this.movingBlocks.length; i++) {
+                //this.movingBlocks[i].x = e.x - this.bx + (i - this.front) * 40;
+                //this.movingBlocks[i].y = e.y - this.by;
+                this.movingBlocks[i].x = e.x - this.bx + this.movingBlocks[i].offsetX;
+                this.movingBlocks[i].y = e.y - this.by + this.movingBlocks[i].offsetY;
             }
         }
     },
     ontouchstart: function(e) {
         var x = Math.floor(e.x / 40);
         var y = Math.floor(e.y / 40);
-        if (boardData[x + y * BOARD_WIDTH] != null) {
+        if (boardData[x + y * BOARD_WIDTH] != null && !boardData[x + y * BOARD_WIDTH].lock) {
             this.bx = 20;
             this.by = 19;
-            this.moving = 1;
+            this.moving = true;
             
             
             this.back = 0;
@@ -175,36 +141,98 @@ var GameScene = Class.create(enchant.Scene, {
             for (var i = 0; i < 1 + this.front + this.back; i++) {
                 boardData[x + i - this.front + y * BOARD_WIDTH].opacity = 0.4;
                 this.movingBlocks[i] = addBlock(this, boardData[x + i - this.front + y * BOARD_WIDTH].color);
-//                boardData[x + i - this.front + y * BOARD_WIDTH] = null;
+                this.movingBlocks[i].x = boardData[x + y * BOARD_WIDTH].x + (i - this.front) * 40;
+                this.movingBlocks[i].y = boardData[x + y * BOARD_WIDTH].y;
+                this.movingBlocks[i].offsetX = this.movingBlocks[i].x - boardData[x + y * BOARD_WIDTH].x;
+                this.movingBlocks[i].offsetY = this.movingBlocks[i].y - boardData[x + y * BOARD_WIDTH].y;
+            }
+            for (var i = 0; i < 1 + this.front + this.back; i++) {
+                var offset = 1 + this.front + this.back;
+                this.movingBlocks[i + offset] = addBlock(this, this.movingBlocks[i].color);
+                this.movingBlocks[i + offset].x = this.movingBlocks[i].x + 40 * 8;
+                this.movingBlocks[i + offset].y = this.movingBlocks[i].y - 40;
+                this.movingBlocks[i + offset].offsetX = this.movingBlocks[i + offset].x - boardData[x + y * BOARD_WIDTH].x;
+                this.movingBlocks[i + offset].offsetY = this.movingBlocks[i + offset].y - boardData[x + y * BOARD_WIDTH].y;
+            }
+            for (var i = 0; i < 1 + this.front + this.back; i++) {
+                var offset = (1 + this.front + this.back) * 2;
+                this.movingBlocks[i + offset] = addBlock(this, this.movingBlocks[i].color);
+                this.movingBlocks[i + offset].x = this.movingBlocks[i].x - 40 * 8;
+                this.movingBlocks[i + offset].y = this.movingBlocks[i].y + 40;
+                this.movingBlocks[i + offset].offsetX = this.movingBlocks[i + offset].x - boardData[x + y * BOARD_WIDTH].x;
+                this.movingBlocks[i + offset].offsetY = this.movingBlocks[i + offset].y - boardData[x + y * BOARD_WIDTH].y;
             }
         }
     },
     ontouchend: function(e) {
         var x = Math.floor(e.x / 40);
         var y = Math.floor(e.y / 40);
+        if (!this.moving) {
+            return;
+        }
         if (boardData[x + y * BOARD_WIDTH] == null) {
         
-            this.moving = 0;
+            this.moving = false;
             
             for (var i = this.srcBegin; i <= this.srcEnd; i++) {
                 this.removeChild(boardData[i]);
                 boardData[i] = null;
             }
             
+            var touchIndex = Math.floor((e.x - this.bx + 20) / 40) + Math.floor((e.y - this.by + 19) / 40) * 8;
+            
             for (var i = 0; i < 1 + this.front + this.back; i++) {
-                this.movingBlocks[i].x = Math.floor((e.x + (i - this.front) * 40 - this.bx + 20) / 40) * 40;
-                this.movingBlocks[i].y = Math.floor((e.y - this.by + 19) / 40) * 40;
-                boardData[x + (i - this.front) + y * BOARD_WIDTH] = this.movingBlocks[i]
+               
+                this.movingBlocks[i].x = Math.floor((touchIndex + (i - this.front)) % 8) * 40;
+                this.movingBlocks[i].y = Math.floor((touchIndex + (i - this.front)) / 8) * 40;
+                boardData[x + (i - this.front) + y * BOARD_WIDTH] = this.movingBlocks[i];
+                this.movingBlocks[i] = null;
+                
+                var offset = 1 + this.front + this.back;
+                this.removeChild(this.movingBlocks[i + offset]);
+                this.movingBlocks[i + offset] = null;
+                this.removeChild(this.movingBlocks[i + offset * 2]);
+                this.movingBlocks[i + offset * 2] = null;
+            }
+            
+            // 確定チェック
+            if (boardData[this.last] != null) {
+                var num = this.totals[boardData[this.last].color];
+                var ok = true;
+                for (var i = 0; i < num; i++) {
+                    if (boardData[this.last + i] == null 
+                            || boardData[this.last].color != boardData[this.last + i].color) {
+                        ok = false;
+                        break;
+                    }
+                }
+                if(ok) {
+                    
+                    for (var i = 0; i < num; i++) {
+                        boardData[this.last + i].lock = true;
+                        //boardData[this.last + i].color = '#0081ff';
+                    }
+                    this.colorStart = this.last;
+                    this.last += num;
+                }
             }
         } else {
-            this.moving = 0;
+            this.moving = false;
             for (var i = this.srcBegin; i <= this.srcEnd; i++) {
                 boardData[i].opacity = 1;
             }
-            for (var i = 0; i < 1 + this.front + this.back; i++) {
+            for (var i = 0; i < this.movingBlocks.length; i++) {
                 this.removeChild(this.movingBlocks[i]);
                 this.movingBlocks[i] = null;
             }
+        }
+    },
+    onenterframe: function() {
+        if (this.age % 5 == 0) {
+        if (boardData[this.colorStart] != null && boardData[this.colorStart].lock) {
+            boardData[this.colorStart].color = '#0081ff';;
+            this.colorStart++;
+        }
         }
     }
 });
