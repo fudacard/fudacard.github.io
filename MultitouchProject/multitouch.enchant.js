@@ -21,7 +21,11 @@ enchant.multitouch.Core = enchant.Class.create(enchant.Core, {
             var core = enchant.Core.instance;
             var evt = new enchant.Event('multitouchmove');
             evt._initPosition(e.pageX, e.pageY);
-            evt.touches = e.touches;
+            evt.touches = [];
+            for (var i = 0; i < e.touches.length; i++) {
+                evt.touches[i] = {x:(e.touches[i].pageX - core._pageX) / core.scale,
+                          y:(e.touches[i].pageY - core._pageY) / core.scale};
+            }
             var target = core.currentScene._determineEventTarget(evt);
             target.dispatchEvent(evt);
         }, false);

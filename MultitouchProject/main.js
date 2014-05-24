@@ -9,15 +9,22 @@ window.onload = function() {
         var sprite = new Sprite(game.width, game.height);
         sprite.image = surface;
         
+        sprite.onmultitouchstart = function(e) {
+            surface.context.clearRect(0, 0, surface.width, surface.height);
+        };
+        
         sprite.onmultitouchmove = function(e) {
             console.log("touch");
+            //surface.context.clearRect(0, 0, surface.width, surface.height);
             if (e.touches.length == 2) {
-                surface.context.clearRect(0, 0, surface.width, surface.height);
                 surface.context.strokeStyle = '#000';
-                surface.context.moveTo(e.touches[0].pageX, e.touches[0].pageY);
-                surface.context.lineTo(e.touches[1].pageX, e.touches[1].pageY);
+                surface.context.beginPath();
+                surface.context.moveTo(e.touches[0].x, e.touches[0].y);
+                surface.context.lineTo(e.touches[1].x, e.touches[1].y);
                 surface.context.stroke();
             }
+        };
+        sprite.onmultitouchend = function(e) {
         };
         game.rootScene.addChild(sprite);
     };
