@@ -4,14 +4,13 @@ window.onload = function() {
 
     game = new Game(320, 320);
     game.onload = function() {
-        game.rootScene.addChild(bear);
-        
         var surface = new Surface(game.width, game.height);
         
         var sprite = new Sprite(game.width, game.height);
         sprite.image = surface;
         
-        game.rootScene.onmultitouchmove = function(e) {
+        sprite.onmultitouchmove = function(e) {
+            console.log("touch");
             if (e.touches.length == 2) {
                 surface.context.clearRect(0, 0, surface.width, surface.height);
                 surface.context.strokeStyle = '#000';
@@ -20,6 +19,7 @@ window.onload = function() {
                 surface.context.stroke();
             }
         };
+        game.rootScene.addChild(sprite);
     };
     game.start();
 };
