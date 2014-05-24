@@ -22,10 +22,8 @@ enchant.multitouch.Core = enchant.Class.create(enchant.Core, {
             var evt = new enchant.Event('multitouchmove');
             evt._initPosition(e.pageX, e.pageY);
             evt.touches = e.touches;
-            var target = core._touchEventTarget[core._mousedownID];
-            if (target) {
-                target.dispatchEvent(evt);
-            }
+            var target = core.currentScene._determineEventTarget(evt);
+            target.dispatchEvent(evt);
         }, false);
         stage.addEventListener('touchend', function(e) {
             var core = enchant.Core.instance;
